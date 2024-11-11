@@ -15,7 +15,7 @@ TagManager:
   - Ground
   - Player
   - Foreground
-  - 
+  - Boxes
   - 
   - 
   - 
@@ -40,6 +40,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Boxes
+    uniqueID: 200622865
     locked: 0
   - name: Ground
     uniqueID: 281750689

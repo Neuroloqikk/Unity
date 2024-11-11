@@ -50,17 +50,17 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteBorder: {x: 0, y: 0, z: 5, w: 3}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: -1
+  spriteTessellationDetail: 0
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -102,13 +102,48 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
-    outline: []
+    sprites:
+    - serializedVersion: 2
+      name: Idle_0
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 3
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9d899970174cf148af70c90f638ca12
+      internalID: 608081061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline:
+    - - {x: 12, y: 1}
+      - {x: 14, y: 1}
+      - {x: 14, y: 1}
+      - {x: 12, y: 1}
+    - - {x: 7, y: 0}
+      - {x: 8, y: 0}
+      - {x: 8, y: 1}
+      - {x: 7, y: 1}
+    - - {x: 10, y: -1}
+      - {x: 12, y: -1}
+      - {x: 12, y: 1}
+      - {x: 9, y: 3}
+      - {x: 10, y: 1}
     customData: 
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -116,7 +151,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Idle_0: 608081061
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

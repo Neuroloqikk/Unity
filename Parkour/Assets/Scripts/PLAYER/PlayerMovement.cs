@@ -5,12 +5,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float jumpPower;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask boxesLayer;
     [SerializeField] private LayerMask wallLayer;
     private Rigidbody2D body;
     private Animator anim;
     private BoxCollider2D boxCollider;
+    private BoxCollider2D boxColliderGroundCheck;
     private float wallJumpCooldown;
     private float horizontalInput;
+
+    [Header("Layer Detection")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private Transform leftWallCheck;
+    [SerializeField] private Transform rightWallCheck;
+    [SerializeField] private float wallCheckRadius;
 
     [Header("Sound")]
     [SerializeField] private AudioClip jumpSound;
@@ -26,6 +34,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Wall jumping")]
     [SerializeField] private float wallJumpX; //Horizontal wall jump force
     [SerializeField] private float wallJumpY; //Vertical wall jump force
+
+    [Header("Wall Sliding")]
+    [SerializeField] private float wallSlideSpeed;
+    [SerializeField] private bool isSliding;
+
 
     private void Awake()
     {
@@ -58,13 +71,14 @@ public class PlayerMovement : MonoBehaviour
         if ((Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.UpArrow)) && body.linearVelocity.y > 0)
             body.linearVelocity = new Vector2(body.linearVelocity.x, body.linearVelocity.y / 2);
 
-        if(OnWall())
+        if (OnWall())
         {
-            body.gravityScale = 0;
-            body.linearVelocity = Vector2.zero;
+            body.linearVelocity = new Vector2(body.linearVelocity.x, -wallSlideSpeed);
+            isSliding = true;
         }
         else
         {
+            isSliding = false;
             body.gravityScale = 7;
             body.linearVelocity = new Vector2(horizontalInput * speed, body.linearVelocity.y);
 
@@ -114,26 +128,25 @@ public class PlayerMovement : MonoBehaviour
 
         //SoundManager.instance.PlaySound(jumpSound);
 
-        if (OnWall())
+        if (IsGrounded())
+        {
+            body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
+            coyoteCounter = 0;
+        }
+            
+        else if (OnWall())
             WallJump();
         else
         {
-            if (IsGrounded())
+            //If not on the ground and coyote counter bigger than 0 do a normal jump
+            if (coyoteCounter > 0)
                 body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
             else
             {
-                //If not on the ground and coyote counter bigger than 0 do a normal jump
-                if (coyoteCounter > 0)
+                if (jumpCounter > 0)
                     body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
-                else
-                {
-                    if(jumpCounter > 0)
-                        body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
-                    jumpCounter--;
-
-                }
+                jumpCounter--;
             }
-            //Reset to avoid double jumps
             coyoteCounter = 0;
         }
     }
@@ -146,17 +159,46 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.down, 0.1f, groundLayer);
-        return raycastHit.collider != null;
+        return (Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer) || Physics2D.OverlapCircle(groundCheck.position, 0.1f, boxesLayer));
     }
     private bool OnWall()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, new Vector2(transform.localScale.x,0), 0.1f, wallLayer);
-        return raycastHit.collider != null;
+        if (IsGrounded()) return false;
+        if (horizontalInput < 0.01f)
+        {
+            if (!(Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))) return false;
+        }
+        else
+        {
+            if (!(Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))) return false;
+        }
+
+        return (Physics2D.OverlapCircle(leftWallCheck.position, 0.1f, wallLayer) || Physics2D.OverlapCircle(rightWallCheck.position, wallCheckRadius, wallLayer));
     }
 
     public bool canAttack()
     {
         return horizontalInput == 0 && IsGrounded() && !OnWall();
+    }
+
+
+    void OnDrawGizmos()
+    {
+        // Visualize ground and wall check areas in the Scene view
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(groundCheck.position, wallCheckRadius);
+        }
+        if (leftWallCheck != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(leftWallCheck.position, wallCheckRadius);
+        }
+        if (rightWallCheck != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(rightWallCheck.position, wallCheckRadius);
+        }
     }
 }
