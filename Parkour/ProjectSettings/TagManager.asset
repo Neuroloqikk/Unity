@@ -8,7 +8,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Background
   - Water
   - UI
   - Wall
@@ -41,14 +41,23 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 3007630315
+    locked: 0
   - name: Boxes
     uniqueID: 200622865
     locked: 0
   - name: Ground
     uniqueID: 281750689
     locked: 0
+  - name: Walls
+    uniqueID: 383301289
+    locked: 0
   - name: Traps
     uniqueID: 2373752021
+    locked: 0
+  - name: Player
+    uniqueID: 590413541
     locked: 0
   m_RenderingLayers:
   - Default
