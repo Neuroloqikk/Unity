@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float zoomSpeed = 20f;
     [SerializeField] private float minZoomFOV = 10f;
     [SerializeField] private float maxZoomFOV = 160f;
-
+    [SerializeField] private float yOffset = 2f;
 
     //Follow player
     [SerializeField] private Transform player;
@@ -29,10 +29,10 @@ public class CameraController : MonoBehaviour
     {
 
         //Room Camera
-        transform.position = Vector3.SmoothDamp(transform.position, new Vector3(currentPosX, transform.position.y, transform.position.z), ref velocity, speed);
+        //transform.position = Vector3.SmoothDamp(transform.position, new Vector3(currentPosX, transform.position.y, transform.position.z), ref velocity, speed);
 
         //Follow Player
-        //transform.position = new Vector3(player.position.x, player.position.y, transform.position.z);
+        transform.position = new Vector3(transform.position.x, player.position.y + yOffset, transform.position.z);
 
         //Follow Player Ahead
         //transform.position = new Vector3(player.position.x + lookAhead, transform.position.y, transform.position.z);

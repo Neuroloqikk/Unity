@@ -13,6 +13,9 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D boxColliderGroundCheck;
     private float wallJumpCooldown;
     private float horizontalInput;
+    private int jumpCounter;
+    [Header("Inventory Management")]
+    public PlayerInventory playerInventory;
 
     [Header("Layer Detection")]
     [SerializeField] private Transform groundCheck;
@@ -26,10 +29,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Coyote time")]
     [SerializeField] private float coyoteTime; //How much time the player can hang in the air before jumping
     private float coyoteCounter; //How much time passed since the player ran off the edge
-
-    [Header("Multiple jumps")]
-    [SerializeField] private int extraJumps;
-    private int jumpCounter;
 
     [Header("Wall jumping")]
     [SerializeField] private float wallJumpX; //Horizontal wall jump force
@@ -85,41 +84,11 @@ public class PlayerMovement : MonoBehaviour
             if(IsGrounded())
             {
                 coyoteCounter = coyoteTime; //Reset coyote counter when on the ground
-                jumpCounter = extraJumps; //Reset jump counter to extra jumps
+                jumpCounter = playerInventory.doubleJumps; //Reset jump counter to extra jumps
             }
             else
                 coyoteCounter -= Time.deltaTime; //Start decreasing coyote counter when not on the ground
         }
-
-
-        //Wall jump Logic
-        /*Initial Wall Jump logic
-        if (wallJumpCooldown > 0.2f)
-        {
-
-            body.linearVelocity = new Vector2(horizontalInput * speed, body.linearVelocity.y);
-
-            if (OnWall() && !IsGrounded())
-            {
-                body.gravityScale = 0;
-                body.linearVelocity = Vector2.zero;
-            }
-            else
-                body.gravityScale = 7;
-
-            if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow))
-            {
-                jump();
-
-                if((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) && IsGrounded()))
-                     SoundManager.instance.PlaySound(jumpSound);
-
-            }
-
-
-        }
-        else
-            wallJumpCooldown += Time.deltaTime;*/
     }
 
     private void jump()
@@ -133,7 +102,6 @@ public class PlayerMovement : MonoBehaviour
             body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
             coyoteCounter = 0;
         }
-            
         else if (OnWall())
             WallJump();
         else
@@ -179,26 +147,5 @@ public class PlayerMovement : MonoBehaviour
     public bool canAttack()
     {
         return horizontalInput == 0 && IsGrounded() && !OnWall();
-    }
-
-     
-    void OnDrawGizmos()
-    {
-        // Visualize ground and wall check areas in the Scene view
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(groundCheck.position, wallCheckRadius);
-        }
-        if (leftWallCheck != null)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(leftWallCheck.position, wallCheckRadius);
-        }
-        if (rightWallCheck != null)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(rightWallCheck.position, wallCheckRadius);
-        }
     }
 }
