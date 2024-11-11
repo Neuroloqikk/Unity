@@ -181,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
         return horizontalInput == 0 && IsGrounded() && !OnWall();
     }
 
-
+     
     void OnDrawGizmos()
     {
         // Visualize ground and wall check areas in the Scene view
