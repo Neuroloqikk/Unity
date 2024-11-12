@@ -1,4 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class DoubleJumpCollectible : MonoBehaviour
 {
@@ -15,5 +17,12 @@ public class DoubleJumpCollectible : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
+
+
+    private void Update()
+    {
+        print(transform.position.y);
+    }
+
 }
  
