@@ -61,15 +61,6 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("isMoving", horizontalInput != 0);
         anim.SetBool("isGrounded", IsGrounded());
 
-        //Jump
-
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow))
-            jump();
-
-        //Adjustable jump height
-        if ((Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.UpArrow)) && body.linearVelocity.y > 0)
-            body.linearVelocity = new Vector2(body.linearVelocity.x, body.linearVelocity.y / 2);
-
         if (OnWall())
         {
             body.linearVelocity = new Vector2(body.linearVelocity.x, -wallSlideSpeed);
@@ -81,7 +72,9 @@ public class PlayerMovement : MonoBehaviour
             body.gravityScale = 7;
             body.linearVelocity = new Vector2(horizontalInput * speed, body.linearVelocity.y);
 
-            if(IsGrounded())
+
+            //If Player is jumping, ignore coyoteCounter otherwise it will double jump
+            if(IsGrounded() && !IsJumping())
             {
                 coyoteCounter = coyoteTime; //Reset coyote counter when on the ground
                 jumpCounter = playerInventory.doubleJumps; //Reset jump counter to extra jumps
@@ -89,11 +82,18 @@ public class PlayerMovement : MonoBehaviour
             else
                 coyoteCounter -= Time.deltaTime; //Start decreasing coyote counter when not on the ground
         }
+
+        //Jump
+
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            jump();
+        }
     }
 
     private void jump()
     {
-        if (coyoteCounter <= 0 && !OnWall() && jumpCounter <= 0) return; //If coyote counter is 0 or less and not on the wall don't do anything also check if has more jumps
+        //print("CoyoteCounter: " + coyoteCounter + " IsGrounded:"+ IsGrounded());
 
         //SoundManager.instance.PlaySound(jumpSound);
 
@@ -104,19 +104,19 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (OnWall())
             WallJump();
-        else
+        else if (coyoteCounter > 0)
         {
             //If not on the ground and coyote counter bigger than 0 do a normal jump
-            if (coyoteCounter > 0)
-                body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
-            else
-            {
-                if (jumpCounter > 0)
-                    body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
-                jumpCounter--;
-            }
-            coyoteCounter = 0;
+            body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
         }
+        else if (jumpCounter > 0)
+        {
+            anim.SetBool("isDoubleJumping", true);
+            body.linearVelocity = new Vector2(body.linearVelocity.x, jumpPower);
+            jumpCounter--;
+            playerInventory.doubleJumps--;
+        }
+        coyoteCounter = 0;
     }
 
     private void WallJump()
@@ -147,5 +147,15 @@ public class PlayerMovement : MonoBehaviour
     public bool canAttack()
     {
         return horizontalInput == 0 && IsGrounded() && !OnWall();
+    }
+
+    private bool IsJumping()
+    {
+        return body.linearVelocity.y > 0;
+    }
+
+    private void DoubleJumpOver()
+    {
+        anim.SetBool("isDoubleJumping", false);
     }
 }

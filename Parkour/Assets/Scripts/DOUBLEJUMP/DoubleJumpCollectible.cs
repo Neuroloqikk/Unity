@@ -18,11 +18,5 @@ public class DoubleJumpCollectible : MonoBehaviour
         }
     }
 
-
-    private void Update()
-    {
-        print(transform.position.y);
-    }
-
 }
  
