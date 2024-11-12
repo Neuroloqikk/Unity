@@ -16,7 +16,7 @@ TagManager:
   - Player
   - Foreground
   - Boxes
-  - 
+  - Enemy
   - 
   - 
   - 
@@ -55,6 +55,9 @@ TagManager:
     locked: 0
   - name: Traps
     uniqueID: 2373752021
+    locked: 0
+  - name: Enemy
+    uniqueID: 2477038271
     locked: 0
   - name: Player
     uniqueID: 590413541
