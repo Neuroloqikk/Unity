@@ -62,7 +62,7 @@ public class RhynoMovement : MonoBehaviour
     {
         if (collision.tag == "Player")
         {
-            playerAnimator.SetTrigger("isDead");
+            playerAnimator.SetBool("isDead", true);
             parentBody.linearVelocity = Vector2.zero;
             anim.SetBool("isSeeingPlayer", false);
             anim.SetBool("isTouchingWall", true);
