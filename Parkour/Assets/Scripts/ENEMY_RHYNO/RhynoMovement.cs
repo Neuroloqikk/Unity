@@ -1,48 +1,71 @@
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class RhynoMovement : MonoBehaviour
 {
-
+    [Header("Rhyno Configs")]
+    private bool isSeeingPlayer;
     private Animator anim;
-    public Transform player;
-    public float visionRange = 10f;     // The range within which the enemy can see the player
-    public LayerMask detectionLayer;  // Layer mask for detecting the player (e.g., "Player" layer)
-
     public float speed = 2f;                 // Speed of the enemy
     public float detectionDistance = 0.5f;   // Distance to check for obstacles in front
-    public LayerMask obstacleLayer;          // Layer to detect obstacles (e.g., walls, ground)
-    private int direction = -1;
+    public float visionRange = 10f;     // The range within which the enemy can see the player
+    private PolygonCollider2D hornCollider;
 
-    private bool isSeeingPlayer;
+    [Header("Rhyno Die on hit")]
+    public LayerMask wallObstacleLayer;          // Layer to detect obstacles (e.g., walls, ground)
+    public LayerMask boxObstacleLayer;          // Layer to detect obstacles (e.g., walls, ground)
+
+    [Header("Parent configs")]
+    public Rigidbody2D parentBody;
+    public GameObject parentGameObject;
+
+    [Header("Player configs")]
+    public Transform player;
+    public Animator playerAnimator;
+    public LayerMask playerLayer;  // Layer mask for detecting the player (e.g., "Player" layer)
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        hornCollider = GetComponent<PolygonCollider2D>();
     }
-
 
     void Update()
     {
+        //If the rhyno saw the player once, then just run until it hits a wall/box
         if (isSeeingPlayer)
         {
             // Move the enemy in the current direction
-            transform.Translate(Vector2.right * direction * speed * Time.deltaTime);
+            parentBody.linearVelocity = new Vector2(speed, parentBody.linearVelocity.y);
 
             // Check for a wall to deactivate
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right * direction, detectionDistance, obstacleLayer);
-            if (hit.collider != null)
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, detectionDistance, wallObstacleLayer);
+            RaycastHit2D hit2 = Physics2D.Raycast(transform.position, Vector2.right, detectionDistance, boxObstacleLayer);
+            if (hit.collider != null || hit2.collider != null)
             {
-               print("Wall"); // Change direction
+                //If goes against box/wall, player the touchingWall animation and deactivate
+                anim.SetBool("isSeeingPlayer", false);
+                anim.SetBool("isTouchingWall", true);
             }
         }
         else
         {
             if (PlayerInSight())
             {
+                //Make the rhyno start running when sees the player
                 anim.SetBool("isSeeingPlayer", true);
                 isSeeingPlayer = true;
             }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            playerAnimator.SetTrigger("isDead");
+            parentBody.linearVelocity = Vector2.zero;
+            anim.SetBool("isSeeingPlayer", false);
+            anim.SetBool("isTouchingWall", true);
         }
     }
 
@@ -52,7 +75,7 @@ public class RhynoMovement : MonoBehaviour
         Vector2 direction = transform.right; // Use transform.up if the enemy is facing up in your game
 
         // Cast a ray in the forward direction to see if it hits the player
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, visionRange, detectionLayer);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, visionRange, playerLayer);
 
         // Check if the raycast hit the player
         if (hit.collider != null && hit.collider.transform == player)
@@ -63,12 +86,9 @@ public class RhynoMovement : MonoBehaviour
         return false; // Player is not in sight
     }
 
-    // Visualize the raycast in the editor
-    private void OnDrawGizmosSelected()
+    public void Deactivate()
     {
-        // Set the color for the vision line
-        Gizmos.color = Color.red;
-        Vector2 direction = transform.right; // Use transform.up if the enemy faces up
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)direction * visionRange);
+        gameObject.SetActive(false);
+        parentGameObject.SetActive(false);
     }
 }

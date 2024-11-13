@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -36,7 +37,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Wall Sliding")]
     [SerializeField] private float wallSlideSpeed;
-    [SerializeField] private bool isSliding;
 
 
     private void Awake()
@@ -64,11 +64,11 @@ public class PlayerMovement : MonoBehaviour
         if (OnWall())
         {
             body.linearVelocity = new Vector2(body.linearVelocity.x, -wallSlideSpeed);
-            isSliding = true;
+            anim.SetBool("isSliding", true);
         }
         else
         {
-            isSliding = false;
+            anim.SetBool("isSliding", false);
             body.gravityScale = 7;
             body.linearVelocity = new Vector2(horizontalInput * speed, body.linearVelocity.y);
 
@@ -157,5 +157,10 @@ public class PlayerMovement : MonoBehaviour
     private void DoubleJumpOver()
     {
         anim.SetBool("isDoubleJumping", false);
+    }
+
+    private void PlayerDead()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
