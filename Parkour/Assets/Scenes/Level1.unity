@@ -1659,6 +1659,8 @@ MonoBehaviour:
   wallJumpX: 1
   wallJumpY: 1
   wallSlideSpeed: 2
+  distanceInsideWall: 0.03
+  wallCheck: {fileID: 23038058}
 --- !u!61 &1540331369
 BoxCollider2D:
   m_ObjectHideFlags: 0

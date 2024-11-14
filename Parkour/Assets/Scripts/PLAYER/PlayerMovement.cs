@@ -15,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
     private float wallJumpCooldown;
     private float horizontalInput;
     private int jumpCounter;
+
+
     [Header("Inventory Management")]
     public PlayerInventory playerInventory;
 
@@ -37,7 +39,11 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Wall Sliding")]
     [SerializeField] private float wallSlideSpeed;
-
+    public float distanceInsideWall;
+    public BoxCollider2D wallCheck;
+    private bool isSliding;
+    private Vector2 originalOffsetWall;
+    private Vector2 originalOffsetMainCollider;
 
     private void Awake()
     {
@@ -45,6 +51,8 @@ public class PlayerMovement : MonoBehaviour
         body = GetComponent<Rigidbody2D>(); 
         anim = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
+        originalOffsetWall = wallCheck.offset;
+        originalOffsetMainCollider = boxCollider.offset;
     }
 
     private void Update()
@@ -64,10 +72,30 @@ public class PlayerMovement : MonoBehaviour
         if (OnWall())
         {
             body.linearVelocity = new Vector2(body.linearVelocity.x, -wallSlideSpeed);
+
+            if (!isSliding)
+            {
+                //Change the offset of the colliders in order to get closer to the wall
+                if (transform.localScale.x > 0)
+                {
+                    wallCheck.offset = new Vector2(originalOffsetWall.x + (-distanceInsideWall * Mathf.Sign(transform.localScale.x)), originalOffsetWall.y);
+                    boxCollider.offset = new Vector2(originalOffsetMainCollider.x + (-distanceInsideWall * Mathf.Sign(transform.localScale.x)), originalOffsetMainCollider.y);
+                }
+                else
+                {
+                    wallCheck.offset = new Vector2(originalOffsetWall.x + (distanceInsideWall * Mathf.Sign(transform.localScale.x)), originalOffsetWall.y);
+                    boxCollider.offset = new Vector2(originalOffsetMainCollider.x + (distanceInsideWall * Mathf.Sign(transform.localScale.x)), originalOffsetMainCollider.y);
+                }
+            }
+            isSliding = true;
             anim.SetBool("isSliding", true);
+
         }
         else
         {
+            boxCollider.offset = originalOffsetMainCollider;
+            wallCheck.offset = originalOffsetWall;
+            isSliding = false;
             anim.SetBool("isSliding", false);
             body.gravityScale = 7;
             body.linearVelocity = new Vector2(horizontalInput * speed, body.linearVelocity.y);
