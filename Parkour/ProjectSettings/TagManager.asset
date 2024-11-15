@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - LeftWall
+  - RightWall
   layers:
   - Default
   - TransparentFX
@@ -17,7 +19,7 @@ TagManager:
   - Foreground
   - Boxes
   - Enemy
-  - 
+  - Collectibles
   - 
   - 
   - 
@@ -52,6 +54,9 @@ TagManager:
     locked: 0
   - name: Walls
     uniqueID: 383301289
+    locked: 0
+  - name: Collectibles
+    uniqueID: 3893148151
     locked: 0
   - name: Traps
     uniqueID: 2373752021
