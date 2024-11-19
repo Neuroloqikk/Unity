@@ -12,6 +12,9 @@ public class RockheadMovement : MonoBehaviour
     public Transform parentBody;
     public float speed = 2f;
 
+    [Header("Player configs")]
+    public Animator playerAnimator;
+
     private void Awake()
     {
         rockheadAnim = GetComponent<Animator>();
@@ -47,6 +50,10 @@ public class RockheadMovement : MonoBehaviour
                 isMoving = false;
                 isOnRightWall = true;
             } 
+        }
+        if (collision.tag == "Player")
+        {
+            playerAnimator.SetBool("isDead", true);
         }
     }
 
